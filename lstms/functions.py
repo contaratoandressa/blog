@@ -79,3 +79,44 @@ def create_dataset(dataset, look_back=1):
      dataY.append(dataset[i + look_back, 0])
 
    return np.array(dataX), np.array(dataY)
+
+# create dataframe 
+# adjust!!!
+def simulation_lstm(trainX, testX, trainY, testY, look_back, norm):
+
+    a, b = np.repeat(range(100, 1000, 100), 10), list(range(1,10))*10
+    output_data = pd.DataFrame()
+    output_data['density'] = b
+    output_data['epochs'] = a
+    output_data['score_train'] = output_data['score_test'] = np.repeat(0, output_data.shape[0])
+
+    for elem in range(0, len(output_data.density)):
+        
+        # create and fit the lstm
+        model = Sequential()
+        model.add(LSTM(4, input_shape=(1, look_back))) # lstm = 4 number of gates
+        model.add(Dense(output_data.density[elem]))
+        model.compile(loss='mean_squared_error', optimizer='adam')
+        model.fit(trainX, trainY, epochs=output_data.epochs[elem], batch_size=1, verbose=2)
+
+
+        # make predictions
+        pred_train = model.predict(trainX)
+        pred_test = model.predict(testX)
+
+        # invert predictions
+        pred_train = norm.inverse_transform(pred_train)
+        trainY = norm.inverse_transform([trainY])
+        pred_test = norm.inverse_transform(pred_test)
+        testY = norm.inverse_transform([testY])
+
+        # calculate root mean squared error
+        score_train = np.sqrt(mean_squared_error(trainY[0], pred_train[:,0]))
+        print('Train Score: %.2f RMSE' % (score_train))
+        score_test = np.sqrt(mean_squared_error(testY[0], pred_test[:,0]))
+        print('Test Score: %.2f RMSE' % (score_test))
+
+        # save results
+        output_data['score_train'][elem], output_data['score_test'][elem] = score_train, score_test
+
+    return(output_data)
