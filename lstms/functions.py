@@ -91,7 +91,7 @@ def simulation_lstm(trainX, testX, trainY, testY, look_back, norm):
     output_data['score_train'] = output_data['score_test'] = np.repeat(0, output_data.shape[0])
 
     for elem in range(0, len(output_data.density)):
-        
+
         # create and fit the lstm
         model = Sequential()
         model.add(LSTM(4, input_shape=(1, look_back))) # lstm = 4 number of gates
@@ -106,14 +106,14 @@ def simulation_lstm(trainX, testX, trainY, testY, look_back, norm):
 
         # invert predictions
         pred_train = norm.inverse_transform(pred_train)
-        trainY = norm.inverse_transform([trainY])
+        pred_trainY = norm.inverse_transform([trainY])
         pred_test = norm.inverse_transform(pred_test)
-        testY = norm.inverse_transform([testY])
+        pred_testY = norm.inverse_transform([testY])
 
         # calculate root mean squared error
-        score_train = np.sqrt(mean_squared_error(trainY[0], pred_train[:,0]))
+        score_train = np.sqrt(mean_squared_error(pred_trainY[0], pred_train[:,0]))
         print('Train Score: %.2f RMSE' % (score_train))
-        score_test = np.sqrt(mean_squared_error(testY[0], pred_test[:,0]))
+        score_test = np.sqrt(mean_squared_error(pred_testY[0], pred_test[:,0]))
         print('Test Score: %.2f RMSE' % (score_test))
 
         # save results
