@@ -15,6 +15,16 @@ from sklearn.metrics import mean_squared_error
 # dataset
 def dataset_import(local = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/airline-passengers.csv'):
     
+    """Download dataset
+
+    local:
+    dataset`s local
+
+    Returns:
+    df:Dataframe
+
+   """
+
     df = pd.read_csv(local)
 
     # descriptives
@@ -42,6 +52,28 @@ def dataset_import(local = 'https://raw.githubusercontent.com/jbrownlee/Datasets
 # prepar data to apply lstms
 def prepar_data(df, seeds = 10, value = 'Passengers', percent_train = 0.75, output = 1):
     
+    """Adjust dataset
+
+    df:
+    dataset
+
+    seeds:
+    fix random seeds
+
+    value: 
+    column to analyzed
+
+    percent_train:
+    percent of dataset to train
+
+    output:
+    wich return (1 = dataset`s train, 0 = dataset`s test and other = norm value)
+
+    Returns:
+    df:Dataframe
+
+   """
+        
     # fix random seed
     tf.random.set_seed(seeds)
 
@@ -71,6 +103,17 @@ def prepar_data(df, seeds = 10, value = 'Passengers', percent_train = 0.75, outp
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, look_back=1):
    
+   """
+   Create the new dataset
+
+   local:
+   dataset`s local
+   
+   look_back:
+   lag
+
+   """
+
    dataX, dataY = [], []
    
    for i in range(len(dataset)-look_back-1):
@@ -83,6 +126,20 @@ def create_dataset(dataset, look_back=1):
 # create dataframe 
 # adjust!!!
 def simulation_lstm(trainX, testX, trainY, testY, look_back, norm):
+
+    """
+    Construct several lstm`s models and return the scores
+
+    train and test (X and Y):
+    split dataset in train and test
+   
+    look_back:
+    lag
+
+    norm:
+    norm value
+
+    """
 
     a, b = np.repeat(range(100, 1000, 100), 10), list(range(1,10))*10
     output_data = pd.DataFrame()
